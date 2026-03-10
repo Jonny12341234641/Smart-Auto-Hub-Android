@@ -36,8 +36,8 @@ class _HomeScreenState extends State<HomeScreen> {
         children: _pages,
       ),
       bottomNavigationBar: CustomBottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: _onTabTapped,
+        selectedIndex: _currentIndex,
+        onDestinationSelected: _onTabTapped,
       ),
     );
   }
