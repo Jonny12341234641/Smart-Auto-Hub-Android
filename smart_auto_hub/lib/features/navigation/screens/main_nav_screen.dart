@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../home/screens/home_screen.dart';
 
 /// ----------------------------------------------------------------------------
 /// DRILL-DOWN ROUTING ARCHITECTURE
@@ -24,7 +25,7 @@ class _MainNavScreenState extends State<MainNavScreen> {
 
   // Placeholder components for the top-level pages in the IndexedStack
   final List<Widget> _screens = const [
-    Center(child: Text('Home Screen')),
+    HomeScreen(),
     Center(child: Text('Catalog Screen')),
     Center(child: Text('Bookings Screen')),
     Center(child: Text('AI Chat Screen')),

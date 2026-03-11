@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'core/theme/app_theme.dart';
-import 'features/home/screens/home_screen.dart';
+import 'core/theme/app_theme.dart';
+import 'features/navigation/screens/main_nav_screen.dart';
 
 void main() {
   runApp(const SmartAutoHub());
@@ -16,7 +17,7 @@ class SmartAutoHub extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system, // Switches based on OS settings
-      home: const HomeScreen(), // Your initial page
+      home: const MainNavScreen(), // Set the navigation shell as the home
     );
   }
 }
