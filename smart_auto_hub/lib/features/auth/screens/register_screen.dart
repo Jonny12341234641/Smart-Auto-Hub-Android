@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-
-// TODO: Import LoginScreen if the import isn't set up yet
-// import 'package:smart_auto_hub/features/auth/screens/login_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../navigation/screens/main_nav_screen.dart';
+import 'login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -38,17 +38,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       await Future.delayed(const Duration(milliseconds: 1500));
 
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('isLoggedIn', true);
+
       if (mounted) {
         setState(() {
           _isLoading = false;
         });
 
-        // TODO: Route to actual MainNavScreen.
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                const Scaffold(body: Center(child: Text('Main Nav Screen'))),
+            builder: (context) => const MainNavScreen(),
           ),
         );
       }
@@ -56,11 +57,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void _navigateToLogin() {
-    // TODO: Route to LoginScreen if the import isn't set up yet
-    // Navigator.pushReplacement(
-    //   context,
-    //   MaterialPageRoute(builder: (context) => const LoginScreen()),
-    // );
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+    );
   }
 
   InputDecoration _buildInputDecoration({

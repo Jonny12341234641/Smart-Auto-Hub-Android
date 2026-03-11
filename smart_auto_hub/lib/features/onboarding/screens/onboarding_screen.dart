@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../auth/screens/register_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -38,16 +40,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     super.dispose();
   }
 
-  void _finishOnboarding() {
-    // TODO: Route to actual Login Screen and save isFirstLaunch flag locally
+  Future<void> _finishOnboarding() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isFirstLaunch', false);
+
+    if (!mounted) return;
+
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => const Scaffold(
-          body: Center(
-            child: Text('Login / Register Flow'),
-          ),
-        ),
+        builder: (context) => const RegisterScreen(),
       ),
     );
   }

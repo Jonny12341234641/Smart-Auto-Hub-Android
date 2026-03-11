@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../onboarding/screens/onboarding_screen.dart';
+import '../../auth/screens/login_screen.dart';
+import '../../navigation/screens/main_nav_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -15,22 +19,42 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _navigateToNextScreen() async {
-    // Wait for the animation to finish + a short buffer (total 2 seconds)
-    await Future.delayed(const Duration(seconds: 2));
+    // Start measuring time for splash animation
+    final startTime = DateTime.now();
+
+    // Get shared preferences
+    final prefs = await SharedPreferences.getInstance();
+    final isFirstLaunch = prefs.getBool('isFirstLaunch') ?? true;
+    final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+
+    // Calculate remaining time to ensure at least 2 seconds of splash
+    final elapsed = DateTime.now().difference(startTime);
+    final remainingDelay = const Duration(seconds: 2) - elapsed;
+    if (remainingDelay.isNegative == false) {
+      await Future.delayed(remainingDelay);
+    }
 
     if (!mounted) return;
 
-    // TODO: Implement actual routing check (Onboarding vs Login)
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const Scaffold(
-          body: Center(
-            child: Text('Onboarding / Login Flow'),
-          ),
-        ),
-      ),
-    );
+    if (isFirstLaunch) {
+      // It's the first launch, go to Onboarding
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const OnboardingScreen()),
+      );
+    } else if (!isLoggedIn) {
+      // Not first launch, but not logged in, go to Login
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
+    } else {
+      // Logged in, go to Home Screen (MainNavScreen which holds HomeScreen)
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const MainNavScreen()),
+      );
+    }
   }
 
   @override

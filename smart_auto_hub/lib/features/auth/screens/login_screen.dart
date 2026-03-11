@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../navigation/screens/main_nav_screen.dart';
+import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -29,21 +32,20 @@ class _LoginScreenState extends State<LoginScreen> {
     // Simulating network request for login process
     await Future.delayed(const Duration(milliseconds: 1500));
 
+    // Save logged in state
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLoggedIn', true);
+
     if (!mounted) return;
 
     setState(() {
       _isLoading = false;
     });
 
-    // TODO: Route to actual MainNavScreen
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => const Scaffold(
-          body: Center(
-            child: Text('Main Nav Screen'),
-          ),
-        ),
+        builder: (context) => const MainNavScreen(),
       ),
     );
   }
@@ -251,7 +253,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        // TODO: Route to RegisterScreen
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const RegisterScreen(),
+                          ),
+                        );
                       },
                       child: Text(
                         'Register',
