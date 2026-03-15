@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../core/theme/app_colors.dart';
 import '../models/vehicle_model.dart';
+import '../../bookings/screens/consultation_booking_screen.dart';
 
 class VehicleDetailsScreen extends StatelessWidget {
   final VehicleModel vehicle;
@@ -165,7 +166,12 @@ class VehicleDetailsScreen extends StatelessWidget {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
             onPressed: () {
-              // Action for booking
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ConsultationBookingScreen(vehicle: vehicle),
+                ),
+              );
             },
             child: const Text('Book Consultation', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           ),

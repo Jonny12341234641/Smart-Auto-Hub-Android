@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../../../core/theme/app_colors.dart';
 import '../models/booking_model.dart';
 import '../services/scheduling_api_service.dart';
+import './consultation_booking_screen.dart';
 
 class MyBookingsDashboardScreen extends StatefulWidget {
   const MyBookingsDashboardScreen({super.key});
@@ -120,6 +121,20 @@ class _MyBookingsDashboardScreenState extends State<MyBookingsDashboardScreen> {
             },
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ConsultationBookingScreen(),
+            ),
+          );
+        },
+        backgroundColor: AppColors.primaryRed,
+        foregroundColor: Colors.white,
+        icon: const Icon(Icons.add_task),
+        label: const Text('New Booking'),
       ),
     );
   }

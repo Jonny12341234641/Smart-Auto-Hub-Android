@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../bookings/screens/consultation_booking_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -49,6 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
               _buildHeader(context, textTheme),
               _buildSearchBar(context, colorScheme, textTheme),
               _buildCategories(context, colorScheme, textTheme),
+              _buildConsultationBanner(context, colorScheme, textTheme),
               _buildFeaturedVehicles(context, colorScheme, textTheme),
               const SizedBox(height: 24), // Bottom padding
             ],
@@ -210,6 +212,80 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildConsultationBanner(BuildContext context, ColorScheme colorScheme, TextTheme textTheme) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Container(
+        padding: const EdgeInsets.all(20.0),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [colorScheme.primary, colorScheme.primary.withOpacity(0.8)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: colorScheme.primary.withOpacity(0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Need Expert Advice?",
+                    style: textTheme.titleLarge?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    "Book a free consultation today!",
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: Colors.white.withOpacity(0.9),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ConsultationBookingScreen(),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: colorScheme.primary,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text("Book Now"),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.handshake_rounded,
+              size: 80,
+              color: Colors.white.withOpacity(0.2),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
