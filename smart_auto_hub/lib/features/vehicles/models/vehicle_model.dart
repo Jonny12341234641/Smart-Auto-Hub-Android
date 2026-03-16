@@ -31,17 +31,17 @@ class VehicleModel {
   factory VehicleModel.fromJson(Map<String, dynamic> json) {
     return VehicleModel(
       id: json['id'].toString(),
-      brand: json['brand'] as String,
-      model: json['model'] as String,
-      year: json['year'] as int,
-      mileage: json['mileage'] as int,
-      price: (json['price'] as num).toDouble(),
+      brand: (json['brand'] ?? json['make'] ?? 'Unknown') as String,
+      model: (json['model'] ?? 'Unknown') as String,
+      year: (json['year'] as num?)?.toInt() ?? 2000,
+      mileage: (json['mileage'] as num?)?.toInt() ?? 0,
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
       images: List<String>.from(json['images'] ?? []),
       location: json['location'] as String?,
       transmission: json['transmission'] as String?,
       fuelType: json['fuelType'] as String?,
       status: json['status'] as String?,
-      type: json['type'] as String?,
+      type: (json['type'] ?? json['bodyType']) as String?,
     );
   }
 

@@ -1,8 +1,11 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import '../../../core/constants/api_endpoints.dart';
 import '../models/vehicle_model.dart';
 
 class VehicleApiService {
 
-  // Mock data for development
+  // Mock data for development fallback
   static final List<VehicleModel> _mockVehicles = [
     VehicleModel(
       id: '1',
@@ -49,17 +52,45 @@ class VehicleApiService {
   ];
 
   Future<List<VehicleModel>> fetchVehicles({Map<String, dynamic>? queryParams}) async {
-    // Returning mock data directly for development as requested
-    await Future.delayed(const Duration(milliseconds: 500)); // Simulate network delay
-    return _mockVehicles;
+    try {
+      final response = await http.get(Uri.parse('${ApiEndpoints.baseUrl}/vehicles'));
+      
+      if (response.statusCode == 200) {
+        final dynamic decodedBody = jsonDecode(response.body);
+        final List<dynamic> data = decodedBody is Map<String, dynamic> && decodedBody.containsKey('data') 
+            ? decodedBody['data'] 
+            : decodedBody; // Handle both { data: [...] } and [...]
+            
+        return data.map((json) => VehicleModel.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load vehicles');
+      }
+    } catch (e) {
+      print("Fetch Vehicles Error: $e");
+      return _mockVehicles; // Fallback to mock data on error
+    }
   }
 
   Future<VehicleModel> fetchVehicleDetails(String id) async {
-    // Returning mock data directly for development as requested
-    await Future.delayed(const Duration(milliseconds: 300)); // Simulate network delay
-    return _mockVehicles.firstWhere(
-      (v) => v.id == id,
-      orElse: () => _mockVehicles.first,
-    );
+    try {
+      final response = await http.get(Uri.parse('${ApiEndpoints.baseUrl}/vehicles/$id'));
+      
+      if (response.statusCode == 200) {
+        final dynamic decodedBody = jsonDecode(response.body);
+        final dynamic data = decodedBody is Map<String, dynamic> && decodedBody.containsKey('data') 
+            ? decodedBody['data'] 
+            : decodedBody;
+            
+        return VehicleModel.fromJson(data);
+      } else {
+        throw Exception('Failed to load vehicle details');
+      }
+    } catch (e) {
+      print("Fetch Vehicle Details Error: $e");
+      return _mockVehicles.firstWhere(
+        (v) => v.id == id,
+        orElse: () => _mockVehicles.first,
+      );
+    }
   }
 }

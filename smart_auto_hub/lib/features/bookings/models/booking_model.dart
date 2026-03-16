@@ -44,10 +44,10 @@ class BookingModel {
   factory BookingModel.fromJson(Map<String, dynamic> json) {
     return BookingModel(
       id: json['id'].toString(),
-      serviceType: json['serviceType'] as String,
-      vehicleDetails: json['vehicleDetails'] as String,
-      scheduledDate: DateTime.parse(json['scheduledDate'] as String),
-      status: BookingStatus.fromString(json['status'] as String),
+      serviceType: (json['consultationType'] ?? json['serviceType'] ?? 'General') as String,
+      vehicleDetails: (json['vehicleType'] ?? json['vehicleDetails'] ?? 'Unknown') as String,
+      scheduledDate: DateTime.parse((json['preferredDate'] ?? json['scheduledDate']).toString()),
+      status: BookingStatus.fromString((json['status'] ?? 'pending').toString()),
     );
   }
 

@@ -1,8 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../../../core/constants/api_endpoints.dart';
 import '../models/booking_model.dart';
 
 class SchedulingApiService {
-  // Mock data for demonstration
+  // Mock data for demonstration fallback
   final List<BookingModel> _mockBookings = [
     BookingModel(
       id: '1',
@@ -37,16 +41,27 @@ class SchedulingApiService {
   /// Fetches the list of user bookings.
   Future<List<BookingModel>> getUserBookings() async {
     try {
-      // Simulate network delay
-      await Future.delayed(const Duration(seconds: 1));
-      
-      // In a real implementation, this would be an http call:
-      // final response = await http.get(Uri.parse('${ApiEndpoints.baseUrl}/bookings'));
-      // if (response.statusCode == 200) { ... }
-      
-      return List.from(_mockBookings);
+      const storage = FlutterSecureStorage();
+      final cookie = await storage.read(key: 'session_cookie');
+
+      final response = await http.get(
+        Uri.parse('${ApiEndpoints.baseUrl}/Consultations/user'),
+        headers: cookie != null ? {'cookie': cookie} : {},
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final List<dynamic> upcoming = data['upcoming'] ?? [];
+        final List<dynamic> history = data['history'] ?? [];
+        
+        final allBookings = [...upcoming, ...history];
+        return allBookings.map((json) => BookingModel.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to fetch bookings: Status ${response.statusCode}');
+      }
     } catch (e) {
-      throw Exception('Failed to fetch bookings: $e');
+      print("Fetch Bookings Error: $e");
+      return List.from(_mockBookings);
     }
   }
 

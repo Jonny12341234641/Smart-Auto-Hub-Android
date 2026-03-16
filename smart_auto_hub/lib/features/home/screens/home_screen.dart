@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../bookings/screens/consultation_booking_screen.dart';
+import '../../vehicles/services/vehicle_api_service.dart';
+import '../../vehicles/models/vehicle_model.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,27 +14,30 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<String> _categories = ["All", "SUV", "Sedan", "Hybrid", "Luxury"];
   String _selectedCategory = "All";
   
-  // Placeholder data for featured vehicles
-  final List<Map<String, String>> _featuredVehicles = [
-    {
-      "makeModel": "2023 Toyota Corolla",
-      "yearMileage": "New • 0 miles",
-      "price": "\$25,000",
-      "imageUrl": "https://images.unsplash.com/photo-1590362891991-f776e747a588?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-      "makeModel": "2022 Honda CR-V",
-      "yearMileage": "Used • 15,000 miles",
-      "price": "\$28,500",
-      "imageUrl": "https://images.unsplash.com/photo-1568844293986-8d0400ba47fe?auto=format&fit=crop&q=80&w=800",
-    },
-    {
-      "makeModel": "2024 Tesla Model 3",
-      "yearMileage": "New • 0 miles",
-      "price": "\$42,000",
-      "imageUrl": "https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&q=80&w=800",
-    },
-  ];
+  // Dynamic data for featured vehicles
+  List<VehicleModel> _featuredVehicles = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFeaturedVehicles();
+  }
+
+  Future<void> _loadFeaturedVehicles() async {
+    try {
+      final vehicles = await VehicleApiService().fetchVehicles();
+      setState(() {
+        _featuredVehicles = vehicles;
+        _isLoading = false;
+      });
+    } catch (e) {
+      print("Failed to load home vehicles: $e");
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -201,15 +206,19 @@ class _HomeScreenState extends State<HomeScreen> {
         const SizedBox(height: 8.0),
         SizedBox(
           height: 300,
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            scrollDirection: Axis.horizontal,
-            itemCount: _featuredVehicles.length,
-            itemBuilder: (context, index) {
-              final vehicle = _featuredVehicles[index];
-              return _buildVehicleCard(vehicle, colorScheme, textTheme);
-            },
-          ),
+          child: _isLoading 
+            ? const Center(child: CircularProgressIndicator())
+            : _featuredVehicles.isEmpty 
+                ? const Center(child: Text("No vehicles available right now."))
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: _featuredVehicles.length,
+                    itemBuilder: (context, index) {
+                      final vehicle = _featuredVehicles[index];
+                      return _buildVehicleCard(vehicle, colorScheme, textTheme);
+                    },
+                  ),
         ),
       ],
     );
@@ -289,7 +298,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildVehicleCard(Map<String, String> vehicle, ColorScheme colorScheme, TextTheme textTheme) {
+  Widget _buildVehicleCard(VehicleModel vehicle, ColorScheme colorScheme, TextTheme textTheme) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
       child: SizedBox(
@@ -312,7 +321,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(
                   flex: 6,
                   child: Image.network(
-                    vehicle['imageUrl'] ?? '',
+                    vehicle.images.isNotEmpty ? vehicle.images.first : '',
                     width: double.infinity,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
@@ -340,7 +349,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              vehicle['makeModel'] ?? '',
+                              "${vehicle.year} ${vehicle.brand} ${vehicle.model}",
                               style: textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -349,7 +358,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              vehicle['yearMileage'] ?? '',
+                              "${vehicle.type ?? 'Used'} • ${vehicle.mileage} miles",
                               style: textTheme.bodyMedium?.copyWith(
                                 color: colorScheme.onSurface.withOpacity(0.6),
                               ),
@@ -359,7 +368,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                         Text(
-                          vehicle['price'] ?? '',
+                          "\$${vehicle.price.toStringAsFixed(0)}",
                           style: textTheme.titleMedium?.copyWith(
                             color: colorScheme.primary,
                             fontWeight: FontWeight.bold,

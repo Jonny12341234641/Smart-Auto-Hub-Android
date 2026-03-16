@@ -4,8 +4,9 @@ import 'package:http/http.dart' as http;
 /// Service for interacting with the RAG (Retrieval-Augmented Generation) chatbot backend.
 class RagChatbotService {
   // Use a base URL for the backend API. 
-  // For local development with Android emulator, 10.0.0.2 is often used.
-  static const String _baseUrl = 'https://api.smartautohub.com/api/v1';
+  // For Chrome/Web testing, use localhost. If reverting to Android Emulator, use 10.0.2.2
+  // Assuming RAG Chatbot runs as a FastAPI service locally on port 8000.
+  static const String _baseUrl = 'http://localhost:8000/api/v1';
 
   /// Sends a [message] to the AI chatbot and returns the response text.
   Future<String> sendMessage(String message) async {
