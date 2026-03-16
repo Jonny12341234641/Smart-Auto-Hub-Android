@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart'; // Add this import
 import '../../onboarding/screens/onboarding_screen.dart';
 import '../../auth/screens/login_screen.dart';
 import '../../navigation/screens/main_nav_screen.dart';
@@ -19,15 +20,20 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _navigateToNextScreen() async {
-    // Start measuring time for splash animation
     final startTime = DateTime.now();
 
-    // Get shared preferences
+    // 1. Check SharedPreferences for first launch
     final prefs = await SharedPreferences.getInstance();
     final isFirstLaunch = prefs.getBool('isFirstLaunch') ?? true;
-    final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
 
-    // Calculate remaining time to ensure at least 2 seconds of splash
+    // 2. Check Secure Storage for the NextAuth session cookie
+    const secureStorage = FlutterSecureStorage();
+    final sessionCookie = await secureStorage.read(key: 'session_cookie');
+    
+    // If the cookie exists and isn't empty, the user is logged in
+    final isLoggedIn = sessionCookie != null && sessionCookie.isNotEmpty;
+
+    // Minimum 2-second delay for branding
     final elapsed = DateTime.now().difference(startTime);
     final remainingDelay = const Duration(seconds: 2) - elapsed;
     if (remainingDelay.isNegative == false) {
@@ -36,20 +42,22 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (!mounted) return;
 
+    // 3. Navigation Routing Logic
     if (isFirstLaunch) {
-      // It's the first launch, go to Onboarding
+      // First launch -> Onboarding
+      // Note: You should set isFirstLaunch to false inside your OnboardingScreen
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const OnboardingScreen()),
       );
     } else if (!isLoggedIn) {
-      // Not first launch, but not logged in, go to Login
+      // Not first launch, no session cookie -> Login
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const LoginScreen()),
       );
     } else {
-      // Logged in, go to Home Screen (MainNavScreen which holds HomeScreen)
+      // Has session cookie -> Home Screen
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const MainNavScreen()),
@@ -67,17 +75,13 @@ class _SplashScreenState extends State<SplashScreen> {
       body: SafeArea(
         child: Stack(
           children: [
-            // Centerpiece: Logo and App Name with Animation
             Center(
               child: TweenAnimationBuilder<double>(
                 tween: Tween<double>(begin: 0.0, end: 1.0),
                 duration: const Duration(milliseconds: 800),
                 curve: Curves.easeOut,
                 builder: (context, value, child) {
-                  // value goes from 0.0 to 1.0
-                  // scale goes from 0.8 to 1.0
                   final scale = 0.8 + (0.2 * value);
-                  
                   return Opacity(
                     opacity: value,
                     child: Transform.scale(
@@ -92,7 +96,7 @@ class _SplashScreenState extends State<SplashScreen> {
                     Icon(
                       Icons.directions_car_rounded,
                       size: 80,
-                      color: colorScheme.primary, // Using primary color for a vibrant accent
+                      color: colorScheme.primary, 
                     ),
                     const SizedBox(height: 16),
                     Text(
@@ -105,8 +109,6 @@ class _SplashScreenState extends State<SplashScreen> {
                 ),
               ),
             ),
-
-            // Bottom elements: Loader and version tag
             Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
