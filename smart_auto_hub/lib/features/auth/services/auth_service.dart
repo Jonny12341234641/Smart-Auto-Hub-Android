@@ -55,20 +55,25 @@ class AuthService {
     }
   }
 
+  static bool _isGoogleSignInInitialized = false;
+
   Future<bool> loginWithGoogle() async {
     try {
       // 1. Initialize GoogleSignIn and authenticate
-      final GoogleSignIn googleSignIn = GoogleSignIn(
-        // You can specify scopes here if needed, e.g., scopes: ['email']
-      );
+      if (!_isGoogleSignInInitialized) {
+        await GoogleSignIn.instance.initialize(
+          // scopes: ['email'],
+        );
+        _isGoogleSignInInitialized = true;
+      }
       
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      final GoogleSignInAccount? googleUser = await GoogleSignIn.instance.authenticate();
       if (googleUser == null) {
         // User canceled the sign-in flow
         return false;
       }
       
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth = googleUser.authentication;
       final String? idToken = googleAuth.idToken;
       
       if (idToken == null) {
