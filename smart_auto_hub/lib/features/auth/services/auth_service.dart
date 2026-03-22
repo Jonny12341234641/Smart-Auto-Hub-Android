@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import '../../../core/constants/api_endpoints.dart'; 
 
 class AuthService {
@@ -50,6 +51,72 @@ class AuthService {
       return false;
     } catch (e) {
       print("Login Error: $e");
+      return false;
+    }
+  }
+
+  Future<bool> loginWithGoogle() async {
+    try {
+      // 1. Initialize GoogleSignIn and authenticate
+      final GoogleSignIn googleSignIn = GoogleSignIn(
+        // You can specify scopes here if needed, e.g., scopes: ['email']
+      );
+      
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      if (googleUser == null) {
+        // User canceled the sign-in flow
+        return false;
+      }
+      
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final String? idToken = googleAuth.idToken;
+      
+      if (idToken == null) {
+        print("Google Sign In Error: idToken is null");
+        return false;
+      }
+
+      // 2. Fetch the CSRF Token required by NextAuth
+      final csrfResponse = await http.get(Uri.parse('${ApiEndpoints.baseUrl}/auth/csrf'));
+      if (csrfResponse.statusCode != 200) return false;
+      
+      final csrfData = jsonDecode(csrfResponse.body);
+      final csrfToken = csrfData['csrfToken'];
+      
+      // Grab the CSRF cookie to send alongside the token in the POST request
+      String? csrfCookie = csrfResponse.headers['set-cookie'];
+
+      // 3. Authenticate with NextAuth's custom "google-native" credentials provider
+      final loginResponse = await http.post(
+        Uri.parse('${ApiEndpoints.baseUrl}/auth/callback/google-native'),
+        headers: {
+          'Content-Type': 'application/json',
+          if (csrfCookie != null) 'cookie': csrfCookie, 
+        },
+        body: jsonEncode({
+          'idToken': idToken,
+          'csrfToken': csrfToken,
+          'json': 'true', // Forces NextAuth to return JSON instead of redirecting
+        }),
+      );
+
+      if (loginResponse.statusCode == 200) {
+        final data = jsonDecode(loginResponse.body);
+        
+        // NextAuth returns 200 even on failure, but provides a 'url' on success
+        if (data['url'] != null && data['url'].toString().isNotEmpty) {
+          
+          // 4. Extract the NextAuth session cookie and save it securely
+          String? sessionCookie = loginResponse.headers['set-cookie'];
+          if (sessionCookie != null) {
+            await _storage.write(key: 'session_cookie', value: sessionCookie);
+            return true;
+          }
+        }
+      }
+      return false;
+    } catch (e) {
+      print("Google Login Error: $e");
       return false;
     }
   }
