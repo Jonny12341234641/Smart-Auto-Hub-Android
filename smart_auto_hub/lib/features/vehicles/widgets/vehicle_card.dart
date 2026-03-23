@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../../core/theme/app_colors.dart';
 import '../models/vehicle_model.dart';
 
 class VehicleCard extends StatelessWidget {
@@ -17,12 +16,11 @@ class VehicleCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final currencyFormat = NumberFormat.currency(symbol: 'LKR ', decimalDigits: 0);
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      color: isDark ? AppColors.elevatedDark : AppColors.white,
+      color: theme.cardTheme.color,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
@@ -82,7 +80,7 @@ class VehicleCard extends StatelessWidget {
                   Text(
                     currencyFormat.format(vehicle.price),
                     style: theme.textTheme.titleLarge?.copyWith(
-                      color: AppColors.primaryRed,
+                      color: theme.colorScheme.primary,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

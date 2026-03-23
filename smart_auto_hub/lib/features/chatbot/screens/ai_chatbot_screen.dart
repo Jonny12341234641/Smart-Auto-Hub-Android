@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
-import '../../../core/theme/app_colors.dart';
 import '../models/chat_message_model.dart';
 import '../services/rag_chatbot_service.dart';
 import '../widgets/chat_bubble.dart';
@@ -107,7 +106,7 @@ class _AiChatbotScreenState extends State<AiChatbotScreen> {
               setState(() => _messages.clear());
               Navigator.pop(context);
             },
-            child: const Text("Clear", style: TextStyle(color: AppColors.error)),
+            child: const Text("Clear", style: TextStyle(color: Colors.redAccent)),
           ),
         ],
       ),
@@ -157,7 +156,7 @@ class _AiChatbotScreenState extends State<AiChatbotScreen> {
             Icon(
               Icons.support_agent,
               size: 80,
-              color: AppColors.primaryRed.withOpacity(0.8),
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
             ),
             const SizedBox(height: 24),
             Text(
@@ -176,8 +175,8 @@ class _AiChatbotScreenState extends State<AiChatbotScreen> {
                 return ActionChip(
                   label: Text(suggestion),
                   onPressed: () => _handleSend(text: suggestion),
-                  backgroundColor: AppColors.primaryRed.withOpacity(0.05),
-                  side: BorderSide(color: AppColors.primaryRed.withOpacity(0.2)),
+                  backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.05),
+                  side: BorderSide(color: Theme.of(context).colorScheme.primary.withOpacity(0.2)),
                 );
               }).toList(),
             ),
@@ -252,8 +251,8 @@ class _AiChatbotScreenState extends State<AiChatbotScreen> {
                     onPressed: _handleSend,
                     icon: const Icon(Icons.send),
                     style: IconButton.styleFrom(
-                      backgroundColor: AppColors.primaryRed,
-                      foregroundColor: Colors.white,
+                      backgroundColor: theme.colorScheme.primary,
+                      foregroundColor: theme.colorScheme.onPrimary,
                     ),
                   ),
           ],

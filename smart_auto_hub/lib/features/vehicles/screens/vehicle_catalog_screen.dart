@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../core/theme/app_colors.dart';
 import '../models/vehicle_model.dart';
 import '../services/vehicle_api_service.dart';
 import '../widgets/vehicle_card.dart';
@@ -124,8 +123,8 @@ class _VehicleCatalogScreenState extends State<VehicleCatalogScreen> {
                     label: Text(type),
                     selected: isSelected,
                     onSelected: (val) => setSheetState(() => _selectedType = val ? type : null),
-                    selectedColor: AppColors.primaryRed.withValues(alpha: 0.2),
-                    checkmarkColor: AppColors.primaryRed,
+                    selectedColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+                    checkmarkColor: Theme.of(context).colorScheme.primary,
                   );
                 }).toList(),
               ),
@@ -139,8 +138,8 @@ class _VehicleCatalogScreenState extends State<VehicleCatalogScreen> {
                     label: Text(trans),
                     selected: isSelected,
                     onSelected: (val) => setSheetState(() => _selectedTransmission = val ? trans : null),
-                    selectedColor: AppColors.primaryRed.withValues(alpha: 0.2),
-                    checkmarkColor: AppColors.primaryRed,
+                    selectedColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+                    checkmarkColor: Theme.of(context).colorScheme.primary,
                   );
                 }).toList(),
               ),
@@ -151,7 +150,7 @@ class _VehicleCatalogScreenState extends State<VehicleCatalogScreen> {
                 min: 0,
                 max: 50000000,
                 divisions: 50,
-                activeColor: AppColors.primaryRed,
+                activeColor: Theme.of(context).colorScheme.primary,
                 labels: RangeLabels(_priceRange.start.round().toString(), _priceRange.end.round().toString()),
                 onChanged: (val) => setSheetState(() => _priceRange = val),
               ),
@@ -162,7 +161,7 @@ class _VehicleCatalogScreenState extends State<VehicleCatalogScreen> {
                 min: 0,
                 max: 200000,
                 divisions: 40,
-                activeColor: AppColors.primaryRed,
+                activeColor: Theme.of(context).colorScheme.primary,
                 labels: RangeLabels(_mileageRange.start.round().toString(), _mileageRange.end.round().toString()),
                 onChanged: (val) => setSheetState(() => _mileageRange = val),
               ),
@@ -187,7 +186,7 @@ class _VehicleCatalogScreenState extends State<VehicleCatalogScreen> {
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryRed,
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor: Colors.white,
                       ),
                       onPressed: () {

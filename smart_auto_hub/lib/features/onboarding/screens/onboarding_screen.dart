@@ -180,7 +180,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             : colorScheme.primary,
                         elevation: _currentIndex == _slides.length - 1 ? 2 : 0,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(10),
                           side: _currentIndex == _slides.length - 1
                               ? BorderSide.none
                               : BorderSide(

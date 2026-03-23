@@ -46,7 +46,7 @@ class _MyBookingsDashboardScreenState extends State<MyBookingsDashboardScreen> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
         title: const Text('My Bookings'),
         backgroundColor: colorScheme.surface,
@@ -131,8 +131,8 @@ class _MyBookingsDashboardScreenState extends State<MyBookingsDashboardScreen> {
             ),
           );
         },
-        backgroundColor: AppColors.primaryRed,
-        foregroundColor: Colors.white,
+        backgroundColor: colorScheme.primary,
+        foregroundColor: colorScheme.onPrimary,
         icon: const Icon(Icons.add_task),
         label: const Text('New Booking'),
       ),

@@ -104,43 +104,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  InputDecoration _buildInputDecoration({
-    required BuildContext context,
-    required String hintText,
-    required IconData prefixIcon,
-    Widget? suffixIcon,
-  }) {
-    final theme = Theme.of(context);
-    return InputDecoration(
-      hintText: hintText,
-      prefixIcon: Icon(prefixIcon, color: theme.colorScheme.onSurfaceVariant),
-      suffixIcon: suffixIcon,
-      filled: true,
-      // Subtle, muted fill color
-      fillColor: theme.colorScheme.onSurface.withValues(alpha: 0.05),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10.0),
-        borderSide: BorderSide.none,
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10.0),
-        borderSide: BorderSide(color: theme.colorScheme.primary, width: 2.0),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10.0),
-        borderSide: BorderSide(color: theme.colorScheme.error, width: 1.0),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10.0),
-        borderSide: BorderSide(color: theme.colorScheme.error, width: 2.0),
-      ),
-      contentPadding: const EdgeInsets.symmetric(
-        vertical: 16.0,
-        horizontal: 16.0,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -192,10 +155,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         controller: _nameController,
                         textInputAction: TextInputAction.next,
                         textCapitalization: TextCapitalization.words,
-                        decoration: _buildInputDecoration(
-                          context: context,
+                        decoration: const InputDecoration(
                           hintText: 'Full Name',
-                          prefixIcon: Icons.person_outline,
+                          prefixIcon: Icon(Icons.person_outline),
                         ),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
@@ -211,20 +173,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
-                        decoration: _buildInputDecoration(
-                          context: context,
+                        decoration: const InputDecoration(
                           hintText: 'Email Address',
-                          prefixIcon: Icons.email_outlined,
+                          prefixIcon: Icon(Icons.email_outlined),
                         ),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
                             return 'Please enter your email address';
                           }
-                          // Add a basic email formatting check if desired but simple empty check requested.
                           return null;
                         },
                       ),
-                      const SizedBox(height: 16),
+
 
                       // Phone Number Field with Country Code
                       Row(
@@ -236,10 +196,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               controller: _countryCodeController,
                               keyboardType: TextInputType.phone,
                               textInputAction: TextInputAction.next,
-                              decoration: _buildInputDecoration(
-                                context: context,
+                              decoration: const InputDecoration(
                                 hintText: 'Code',
-                                prefixIcon: Icons.public,
+                                prefixIcon: Icon(Icons.public),
                               ),
                               validator: (value) {
                                 if (value == null || value.trim().isEmpty) {
@@ -256,10 +215,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               controller: _phoneController,
                               keyboardType: TextInputType.phone,
                               textInputAction: TextInputAction.next,
-                              decoration: _buildInputDecoration(
-                                context: context,
+                              decoration: const InputDecoration(
                                 hintText: 'Phone Number',
-                                prefixIcon: Icons.phone_outlined,
+                                prefixIcon: Icon(Icons.phone_outlined),
                               ),
                               validator: (value) {
                                 if (value == null || value.trim().isEmpty) {
@@ -278,16 +236,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         controller: _passwordController,
                         obscureText: _obscurePassword,
                         textInputAction: TextInputAction.next,
-                        decoration: _buildInputDecoration(
-                          context: context,
+                        decoration: InputDecoration(
                           hintText: 'Password',
-                          prefixIcon: Icons.lock_outline,
+                          prefixIcon: const Icon(Icons.lock_outline),
                           suffixIcon: IconButton(
                             icon: Icon(
                               _obscurePassword
                                   ? Icons.visibility_off_outlined
                                   : Icons.visibility_outlined,
-                              color: theme.colorScheme.onSurfaceVariant,
                             ),
                             onPressed: () {
                               setState(() {
@@ -311,16 +267,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         obscureText: _obscureConfirmPassword,
                         textInputAction: TextInputAction.done,
                         onFieldSubmitted: (_) => _handleRegister(),
-                        decoration: _buildInputDecoration(
-                          context: context,
+                        decoration: InputDecoration(
                           hintText: 'Confirm Password',
-                          prefixIcon: Icons.lock_outline,
+                          prefixIcon: const Icon(Icons.lock_outline),
                           suffixIcon: IconButton(
                             icon: Icon(
                               _obscureConfirmPassword
                                   ? Icons.visibility_off_outlined
                                   : Icons.visibility_outlined,
-                              color: theme.colorScheme.onSurfaceVariant,
                             ),
                             onPressed: () {
                               setState(() {
@@ -340,6 +294,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           return null;
                         },
                       ),
+
                     ],
                   ),
                 ),
@@ -351,14 +306,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.primary,
-                      foregroundColor: theme.colorScheme.onPrimary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      elevation: 0,
-                    ),
                     onPressed: _isLoading ? null : _handleRegister,
                     child: _isLoading
                         ? const SizedBox(
@@ -403,12 +350,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   width: double.infinity,
                   height: 50,
                   child: OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      side: BorderSide(color: theme.colorScheme.outline),
-                    ),
                     onPressed: () {
                       // TODO: Implement Google Sign Up
                     },

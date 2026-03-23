@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../vehicles/models/vehicle_model.dart';
 
 class ConsultationBookingScreen extends StatefulWidget {
@@ -79,9 +78,9 @@ class _ConsultationBookingScreenState extends State<ConsultationBookingScreen> {
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Consultation request sent successfully!'),
-            backgroundColor: AppColors.success,
+          SnackBar(
+            content: const Text('Consultation request sent successfully!'),
+            backgroundColor: Theme.of(context).colorScheme.primary,
           ),
         );
         Navigator.pop(context);
@@ -91,7 +90,8 @@ class _ConsultationBookingScreenState extends State<ConsultationBookingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return Scaffold(
       appBar: AppBar(
@@ -112,15 +112,15 @@ class _ConsultationBookingScreenState extends State<ConsultationBookingScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (widget.vehicle != null) ...[
-                      _buildVehicleBanner(isDarkMode),
+                      _buildVehicleBanner(context),
                       const SizedBox(height: 24),
                     ],
                     
+                    // — Filled input style (matching login/register and web project) —
                     TextFormField(
                       controller: _nameController,
                       decoration: const InputDecoration(
-                        labelText: "Full Name",
-                        border: OutlineInputBorder(),
+                        hintText: "Full Name",
                         prefixIcon: Icon(Icons.person_outline),
                       ),
                       validator: (value) {
@@ -135,8 +135,7 @@ class _ConsultationBookingScreenState extends State<ConsultationBookingScreen> {
                     TextFormField(
                       controller: _emailController,
                       decoration: const InputDecoration(
-                        labelText: "Email Address",
-                        border: OutlineInputBorder(),
+                        hintText: "Email Address",
                         prefixIcon: Icon(Icons.email_outlined),
                       ),
                       keyboardType: TextInputType.emailAddress,
@@ -155,8 +154,7 @@ class _ConsultationBookingScreenState extends State<ConsultationBookingScreen> {
                     TextFormField(
                       controller: _phoneController,
                       decoration: const InputDecoration(
-                        labelText: "Phone Number",
-                        border: OutlineInputBorder(),
+                        hintText: "Phone Number",
                         prefixIcon: Icon(Icons.phone_outlined),
                       ),
                       keyboardType: TextInputType.phone,
@@ -176,8 +174,7 @@ class _ConsultationBookingScreenState extends State<ConsultationBookingScreen> {
                             onTap: () => _selectDate(context),
                             child: InputDecorator(
                               decoration: const InputDecoration(
-                                labelText: "Preferred Date",
-                                border: OutlineInputBorder(),
+                                hintText: "Preferred Date",
                                 prefixIcon: Icon(Icons.calendar_today_outlined),
                               ),
                               child: Text(
@@ -186,8 +183,8 @@ class _ConsultationBookingScreenState extends State<ConsultationBookingScreen> {
                                     : DateFormat('MMM dd, yyyy').format(_selectedDate!),
                                 style: TextStyle(
                                   color: _selectedDate == null 
-                                      ? Theme.of(context).hintColor 
-                                      : Theme.of(context).colorScheme.onSurface,
+                                      ? colorScheme.onSurfaceVariant 
+                                      : colorScheme.onSurface,
                                 ),
                               ),
                             ),
@@ -198,8 +195,7 @@ class _ConsultationBookingScreenState extends State<ConsultationBookingScreen> {
                           child: DropdownButtonFormField<String>(
                             value: _selectedTime,
                             decoration: const InputDecoration(
-                              labelText: "Preferred Time",
-                              border: OutlineInputBorder(),
+                              hintText: "Preferred Time",
                               contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                             ),
                             items: _timeSlots.map((String slot) {
@@ -220,9 +216,11 @@ class _ConsultationBookingScreenState extends State<ConsultationBookingScreen> {
                     ),
                     const SizedBox(height: 24),
 
-                    const Text(
+                    Text(
                       "Contact Mode",
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     SizedBox(
@@ -252,9 +250,9 @@ class _ConsultationBookingScreenState extends State<ConsultationBookingScreen> {
                           });
                         },
                         style: SegmentedButton.styleFrom(
-                          selectedBackgroundColor: AppColors.primaryRed.withOpacity(0.1),
-                          selectedForegroundColor: AppColors.primaryRed,
-                          side: BorderSide(color: Colors.grey.withOpacity(0.5)),
+                          selectedBackgroundColor: colorScheme.primary.withOpacity(0.1),
+                          selectedForegroundColor: colorScheme.primary,
+                          side: BorderSide(color: colorScheme.outline.withOpacity(0.5)),
                         ),
                       ),
                     ),
@@ -263,8 +261,7 @@ class _ConsultationBookingScreenState extends State<ConsultationBookingScreen> {
                     TextFormField(
                       controller: _messageController,
                       decoration: const InputDecoration(
-                        labelText: "Message (Optional)",
-                        border: OutlineInputBorder(),
+                        hintText: "Message (Optional)",
                         alignLabelWithHint: true,
                       ),
                       maxLines: 4,
@@ -281,13 +278,14 @@ class _ConsultationBookingScreenState extends State<ConsultationBookingScreen> {
     );
   }
 
-  Widget _buildVehicleBanner(bool isDarkMode) {
+  Widget _buildVehicleBanner(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: isDarkMode ? AppColors.elevatedDark : Colors.grey[200],
+        color: colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.withOpacity(0.3)),
+        border: Border.all(color: colorScheme.outline.withOpacity(0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -304,8 +302,8 @@ class _ConsultationBookingScreenState extends State<ConsultationBookingScreen> {
                   errorBuilder: (context, error, stackTrace) => Container(
                     width: 60,
                     height: 60,
-                    color: Colors.grey[300],
-                    child: const Icon(Icons.directions_car, color: Colors.grey),
+                    color: colorScheme.surfaceContainerHighest,
+                    child: Icon(Icons.directions_car, color: colorScheme.onSurfaceVariant),
                   ),
                 ),
               ),
@@ -316,16 +314,14 @@ class _ConsultationBookingScreenState extends State<ConsultationBookingScreen> {
                   children: [
                     Text(
                       widget.vehicle!.brand,
-                      style: const TextStyle(
-                        fontSize: 14,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w500,
-                        color: AppColors.primaryRed,
+                        color: colorScheme.primary,
                       ),
                     ),
                     Text(
                       widget.vehicle!.model,
-                      style: const TextStyle(
-                        fontSize: 18,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -335,9 +331,11 @@ class _ConsultationBookingScreenState extends State<ConsultationBookingScreen> {
             ],
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             "Schedule a meeting with our automotive experts",
-            style: TextStyle(fontSize: 13, color: Colors.grey),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),
@@ -361,21 +359,12 @@ class _ConsultationBookingScreenState extends State<ConsultationBookingScreen> {
         top: false,
         child: ElevatedButton(
           onPressed: _isLoading ? null : _submitForm,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primaryRed,
-            foregroundColor: AppColors.white,
-            minimumSize: const Size(double.infinity, 50),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            elevation: 0,
-          ),
           child: _isLoading
-              ? const SizedBox(
+              ? SizedBox(
                   height: 24,
                   width: 24,
                   child: CircularProgressIndicator(
-                    color: AppColors.white,
+                    color: Theme.of(context).colorScheme.onPrimary,
                     strokeWidth: 2,
                   ),
                 )

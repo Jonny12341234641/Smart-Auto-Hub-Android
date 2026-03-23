@@ -26,23 +26,16 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _handleLogin() async {
-    final email = _emailController.text.trim();
-    final password = _passwordController.text;
-
-    if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in all fields')),
-      );
-      return;
-    }
-
     setState(() {
       _isLoading = true;
     });
 
-    // Call the Next.js backend
-    final authService = AuthService();
-    final success = await authService.login(email, password);
+    // TODO: Re-enable authentication and field validation when backend is ready.
+    // final email = _emailController.text.trim();
+    // final password = _passwordController.text;
+    // if (email.isEmpty || password.isEmpty) { ... }
+    // final success = await AuthService().login(email, password);
+    await Future.delayed(const Duration(milliseconds: 500));
 
     if (!mounted) return;
 
@@ -50,21 +43,13 @@ class _LoginScreenState extends State<LoginScreen> {
       _isLoading = false;
     });
 
-    if (success) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const MainNavScreen(),
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Invalid credentials. Please try again.'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
+    // Temporarily bypass login — always navigate to main app
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const MainNavScreen(),
+      ),
+    );
   }
 
   Future<void> _handleGoogleLogin() async {
@@ -103,17 +88,6 @@ class _LoginScreenState extends State<LoginScreen> {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    // Standardized Input Decoration Borders
-    final defaultBorder = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(10.0),
-      borderSide: BorderSide.none,
-    );
-
-    final focusedBorder = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(10.0),
-      borderSide: BorderSide(color: colorScheme.primary, width: 2.0),
-    );
-
     return Scaffold(
       backgroundColor: colorScheme.surface,
       body: SafeArea(
@@ -151,14 +125,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.email_outlined),
+                  decoration: const InputDecoration(
+                    prefixIcon: Icon(Icons.email_outlined),
                     hintText: 'Email Address',
-                    filled: true,
-                    fillColor: colorScheme.onSurface.withOpacity(0.05),
-                    border: defaultBorder,
-                    enabledBorder: defaultBorder,
-                    focusedBorder: focusedBorder,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -168,11 +137,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.lock_outline),
                     hintText: 'Password',
-                    filled: true,
-                    fillColor: colorScheme.onSurface.withOpacity(0.05),
-                    border: defaultBorder,
-                    enabledBorder: defaultBorder,
-                    focusedBorder: focusedBorder,
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscurePassword
@@ -215,14 +179,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: 50,
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _handleLogin,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colorScheme.primary,
-                      foregroundColor: colorScheme.onPrimary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      elevation: 0,
-                    ),
                     child: _isLoading
                         ? SizedBox(
                             height: 24,

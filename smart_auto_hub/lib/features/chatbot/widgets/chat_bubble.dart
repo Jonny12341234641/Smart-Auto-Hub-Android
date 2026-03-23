@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../../core/theme/app_colors.dart';
 import '../models/chat_message_model.dart';
 
 /// A widget that displays a single chat message in a bubble.
@@ -43,10 +42,10 @@ class ChatBubble extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
                 decoration: BoxDecoration(
                   color: isUser 
-                      ? AppColors.primaryRed 
+                      ? colorScheme.primary 
                       : (theme.brightness == Brightness.dark 
-                          ? AppColors.elevatedDark 
-                          : colorScheme.surfaceVariant),
+                          ? colorScheme.surfaceContainerHighest 
+                          : colorScheme.surfaceContainerHighest),
                   borderRadius: BorderRadius.only(
                     topLeft: const Radius.circular(16),
                     topRight: const Radius.circular(16),

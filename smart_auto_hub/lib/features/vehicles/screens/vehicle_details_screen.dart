@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../../core/theme/app_colors.dart';
 import '../models/vehicle_model.dart';
 import '../../bookings/screens/consultation_booking_screen.dart';
 
@@ -12,6 +11,7 @@ class VehicleDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final currencyFormat = NumberFormat.currency(symbol: 'LKR ', decimalDigits: 0);
 
     return Scaffold(
@@ -31,7 +31,7 @@ class VehicleDetailsScreen extends StatelessWidget {
                       return Image.network(
                         vehicle.images[index],
                         fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => _buildPlaceholder(),
+                        errorBuilder: (context, error, stackTrace) => _buildPlaceholder(colorScheme),
                       );
                     },
                   ),
@@ -79,7 +79,7 @@ class VehicleDetailsScreen extends StatelessWidget {
                             children: [
                               Text(
                                 vehicle.brand,
-                                style: theme.textTheme.headlineSmall?.copyWith(color: AppColors.primaryRed),
+                                style: theme.textTheme.headlineSmall?.copyWith(color: colorScheme.primary),
                               ),
                               Text(
                                 '${vehicle.model} (${vehicle.year})',
@@ -91,12 +91,12 @@ class VehicleDetailsScreen extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                          color: AppColors.primaryRed.withValues(alpha: 0.1),
+                            color: colorScheme.primary.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
                             vehicle.status ?? 'Available',
-                            style: const TextStyle(color: AppColors.primaryRed, fontWeight: FontWeight.bold),
+                            style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold),
                           ),
                         ),
                       ],
@@ -105,14 +105,14 @@ class VehicleDetailsScreen extends StatelessWidget {
                     Text(
                       currencyFormat.format(vehicle.price),
                       style: theme.textTheme.headlineSmall?.copyWith(
-                        color: AppColors.primaryRed,
+                        color: colorScheme.primary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const Divider(height: 40),
                     
                     // Quick Specs Grid
-                    _buildSectionTitle('Vehicle Specifications'),
+                    _buildSectionTitle(context, 'Vehicle Specifications'),
                     const SizedBox(height: 16),
                     GridView.count(
                       shrinkWrap: true,
@@ -122,15 +122,15 @@ class VehicleDetailsScreen extends StatelessWidget {
                       mainAxisSpacing: 10,
                       crossAxisSpacing: 10,
                       children: [
-                        _buildSpecItem(Icons.settings, 'Transmission', vehicle.transmission ?? 'N/A'),
-                        _buildSpecItem(Icons.local_gas_station, 'Fuel Type', vehicle.fuelType ?? 'N/A'),
-                        _buildSpecItem(Icons.speed, 'Mileage', '${NumberFormat('#,###').format(vehicle.mileage)} km'),
-                        _buildSpecItem(Icons.location_on, 'Location', vehicle.location ?? 'N/A'),
+                        _buildSpecItem(context, Icons.settings, 'Transmission', vehicle.transmission ?? 'N/A'),
+                        _buildSpecItem(context, Icons.local_gas_station, 'Fuel Type', vehicle.fuelType ?? 'N/A'),
+                        _buildSpecItem(context, Icons.speed, 'Mileage', '${NumberFormat('#,###').format(vehicle.mileage)} km'),
+                        _buildSpecItem(context, Icons.location_on, 'Location', vehicle.location ?? 'N/A'),
                       ],
                     ),
                     
                     const SizedBox(height: 32),
-                    _buildSectionTitle('Description'),
+                    _buildSectionTitle(context, 'Description'),
                     const SizedBox(height: 8),
                     Text(
                       'This ${vehicle.year} ${vehicle.brand} ${vehicle.model} is a high-performance ${vehicle.type ?? "vehicle"} in excellent condition. Equipped with a ${vehicle.transmission} transmission and powered by ${vehicle.fuelType}, it has covered ${vehicle.mileage} km. This car offers a perfect blend of comfort and power.',
@@ -147,10 +147,10 @@ class VehicleDetailsScreen extends StatelessWidget {
       bottomSheet: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: theme.brightness == Brightness.dark ? AppColors.darkGray : AppColors.white,
+          color: colorScheme.surface,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
+              color: Colors.black.withOpacity(0.1),
               blurRadius: 10,
               offset: const Offset(0, -5),
             ),
@@ -160,11 +160,6 @@ class VehicleDetailsScreen extends StatelessWidget {
           width: double.infinity,
           height: 56,
           child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryRed,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            ),
             onPressed: () {
               Navigator.push(
                 context,
@@ -180,31 +175,38 @@ class VehicleDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSectionTitle(BuildContext context, String title) {
     return Text(
       title,
-      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+        fontWeight: FontWeight.bold,
+      ),
     );
   }
 
-  Widget _buildSpecItem(IconData icon, String label, String value) {
+  Widget _buildSpecItem(BuildContext context, IconData icon, String label, String value) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
+        border: Border.all(color: colorScheme.outline.withOpacity(0.3)),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
         children: [
-          Icon(icon, color: AppColors.primaryRed, size: 20),
+          Icon(icon, color: colorScheme.primary, size: 20),
           const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(label, style: const TextStyle(fontSize: 10, color: Colors.grey)),
-                Text(value, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
+                Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                )),
+                Text(value, style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ), overflow: TextOverflow.ellipsis),
               ],
             ),
           ),
@@ -213,10 +215,10 @@ class VehicleDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPlaceholder() {
+  Widget _buildPlaceholder(ColorScheme colorScheme) {
     return Container(
-      color: Colors.grey[300],
-      child: const Icon(Icons.directions_car, size: 100, color: Colors.grey),
+      color: colorScheme.surfaceContainerHighest,
+      child: Icon(Icons.directions_car, size: 100, color: colorScheme.onSurfaceVariant),
     );
   }
 }
